@@ -2,14 +2,14 @@ import chromadb
 from llama_index.core import StorageContext
 from llama_index.vector_stores.chroma import ChromaVectorStore  # Import ChromaVectorStore
 import os
+import config
 
 def get_vector_store():
     # Initialize ChromaDB client
-    chroma_client = chromadb.PersistentClient(path=os.getenv("CHROMA_DB_PATH", "./vector_db"))
+    chroma_client = chromadb.PersistentClient(path=config.CHROMA_DB_PATH)
 
     collection_name = "test_collection"
 
-    
     
     # Create or get a collection
     collection = chroma_client.get_or_create_collection(name=collection_name)
