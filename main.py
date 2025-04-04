@@ -4,6 +4,10 @@ import time
 import summarizer
 import gherkin_generator
 import selenium_generator
+import torch
+
+torch.classes.__path__ = [os.path.join(torch.__path__[0], torch.classes.__file__)] 
+
 
 # st.title("AI-Powered Test Automation Agent with RAG")
 st.subheader("🚀 **AI-Powered Test Automation Agent with RAG** 🎉")
