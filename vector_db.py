@@ -6,7 +6,8 @@ import config
 
 def get_vector_store():
     # Initialize ChromaDB client
-    chroma_client = chromadb.PersistentClient(path=config.CHROMA_DB_PATH)
+    chroma_client = chromadb.PersistentClient(path=config.CHROMA_DB_PATH) 
+    # called from cofig
 
     collection_name = "test_collection"
 
