@@ -1,13 +1,8 @@
-# import chromadb
-from llama_index.core import StorageContext
-# from llama_index.vector_stores.chroma import ChromaVectorStore  # Import ChromaVectorStore
 import os
-import config
-
-from llama_index.vector_stores.faiss import FaissVectorStore
 import faiss
-
-
+from llama_index.vector_stores.faiss import FaissVectorStore
+from llama_index.core import StorageContext
+import config
 
 
 def get_vector_store():
@@ -15,33 +10,27 @@ def get_vector_store():
     os.makedirs(persist_dir, exist_ok=True)
 
     index_path = os.path.join(persist_dir, "faiss_index.index")
+    dim = 384  # Match this with your embedding model (e.g., MiniLM)
 
-    # Try to read index if it exists
+    # Load or create FAISS index
     if os.path.exists(index_path):
         try:
             faiss_index = faiss.read_index(index_path)
         except Exception as e:
-            print(f"⚠️ Failed to read existing FAISS index: {e}")
-            print("🔁 Creating a fresh FAISS index...")
-            faiss_index = faiss.IndexFlatL2(384)  # adjust if using different embedding dims
+            print(f"⚠️ Failed to load FAISS index: {e}")
+            print("🔁 Creating new index...")
+            faiss_index = faiss.IndexFlatL2(dim)
     else:
-        faiss_index = faiss.IndexFlatL2(384)
+        faiss_index = faiss.IndexFlatL2(dim)
 
-    # Setup vector store
+    # Create vector store
     vector_store = FaissVectorStore(faiss_index=faiss_index)
 
-    # Save the index back if it's new or modified
+    # Persist the index
     try:
-        vector_store.persist(index_path)
+        faiss.write_index(faiss_index, index_path)
     except Exception as e:
-        print(f"⚠️ Could not persist FAISS index: {e}")
+        print(f"⚠️ Could not persist FAISS index to disk: {e}")
 
+    # Return storage context
     return StorageContext.from_defaults(vector_store=vector_store)
-
-# def delete_file_vectors(file_name):
-#     """Delete vectors related to a specific file without clearing the entire DB."""
-#     chroma_client = chromadb.PersistentClient(path=os.getenv("CHROMA_DB_PATH", "./vector_db"))
-#     collection = chroma_client.get_or_create_collection(name="test_collection")
-
-#     # Use metadata filtering to delete only the specific file’s vectors
-#     collection.delete(where={"file_name": file_name})  
