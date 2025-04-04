@@ -6,6 +6,9 @@ import gherkin_generator
 import selenium_generator
 import torch
 
+# Ensure the uploads folder exists before anything else
+os.makedirs("./uploads", exist_ok=True)
+
 torch.classes.__path__ = [os.path.join(torch.__path__[0], torch.classes.__file__)] 
 
 
