@@ -4,21 +4,38 @@ from llama_index.vector_stores.chroma import ChromaVectorStore  # Import ChromaV
 import os
 import config
 
+from llama_index.vector_stores.faiss import FaissVectorStore
+import faiss
+
+
+
+
 def get_vector_store():
-    # Initialize ChromaDB client
-    chroma_client = chromadb.PersistentClient(path=config.CHROMA_DB_PATH) 
-    # called from cofig
+    persist_dir = os.path.abspath(config.CHROMA_DB_PATH)
+    os.makedirs(persist_dir, exist_ok=True)
 
-    collection_name = "test_collection"
+    index_path = os.path.join(persist_dir, "faiss_index.index")
 
-    
-    # Create or get a collection
-    collection = chroma_client.get_or_create_collection(name=collection_name)
+    # Try to read index if it exists
+    if os.path.exists(index_path):
+        try:
+            faiss_index = faiss.read_index(index_path)
+        except Exception as e:
+            print(f"⚠️ Failed to read existing FAISS index: {e}")
+            print("🔁 Creating a fresh FAISS index...")
+            faiss_index = faiss.IndexFlatL2(384)  # adjust if using different embedding dims
+    else:
+        faiss_index = faiss.IndexFlatL2(384)
 
-    # Initialize LlamaIndex's ChromaVectorStore
-    vector_store = ChromaVectorStore(chroma_collection=collection)
+    # Setup vector store
+    vector_store = FaissVectorStore(faiss_index=faiss_index)
 
-    # Return storage context with correct vector store
+    # Save the index back if it's new or modified
+    try:
+        vector_store.persist(index_path)
+    except Exception as e:
+        print(f"⚠️ Could not persist FAISS index: {e}")
+
     return StorageContext.from_defaults(vector_store=vector_store)
 
 def delete_file_vectors(file_name):
