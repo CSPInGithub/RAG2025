@@ -71,7 +71,7 @@ def answer_query(user_query, file_path, file_name, model_name):
 
     # st.write([doc.text for doc in processed_docs])
 
-    vector_db.delete_file_vectors(file_name)
+    # vector_db.delete_file_vectors(file_name)
 
     storage_context = vector_db.get_vector_store()
     index = VectorStoreIndex.from_documents(
