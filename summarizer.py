@@ -57,7 +57,7 @@ def extract_text_from_pdf(pdf_path):
     return text
 
 
-def answer_query(user_query, file_path, file_name, model_name):
+def answer_query(user_query, file_path, model_name):
     reader = SimpleDirectoryReader(input_dir=file_path)
     docs = reader.load_data()
     # document object
