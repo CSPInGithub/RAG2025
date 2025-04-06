@@ -3,6 +3,7 @@ import faiss
 from llama_index.vector_stores.faiss import FaissVectorStore
 from llama_index.core import StorageContext
 import config
+# import asyncio
 
 
 def get_vector_store():

@@ -4,6 +4,7 @@ from groq import Groq
 import config
 import vector_db
 import streamlit as st
+# import asyncio
 
 # from llama_index.llms import Ollama
 
